@@ -42,7 +42,7 @@ source $SCRIPT_DIR/envs.sh
 pushd ${top_level}/resources >/dev/null
 
 openssl genrsa -out CA.key 4096
-openssl req -x509 -new -nodes -key CA.key -subj "/CN=paulc" -days 3650 -reqexts v3_req -extensions v3_ca -out CA.cer
+openssl req -x509 -new -nodes -key CA.key -subj "/CN=observability" -days 3650 -reqexts v3_req -extensions v3_ca -out CA.cer
 
 if [[ "$OSTYPE" == "linux"* ]]; then
   sudo cp CA.cer /usr/local/share/ca-certificates/CA.crt

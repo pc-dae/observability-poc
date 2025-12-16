@@ -1,4 +1,4 @@
-dnsSuffix: kubernetes.docker.internal
+dnsSuffix: observability.kubernetes.internal
 clusterIP: ${CLUSTER_IP}
 storageClass: standard
 namespaces:
