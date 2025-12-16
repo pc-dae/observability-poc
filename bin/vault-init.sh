@@ -53,7 +53,7 @@ done
 
 while ( true); do
   set +e
-  vault status --format=json $tls_skip > /tmp/vault-status.json
+  vault status --format=json $tls_skip > /tmp/vault-status.json 2>/dev/null
   set -e
   if [ "$(jq -r '.initialized' /tmp/vault-status.json)" == "true" ]; then
     echo "Vault already initialized"
