@@ -405,7 +405,7 @@ if kubectl get clusterpolicy argocd-image-pull-policy >/dev/null 2>&1; then
 else
   echo "Applying Kyverno policy for Argo CD..."
   sleep 5
-  kubectl apply -f ${global_config_path}local-cluster/core/kyverno-policies/argocd-image-pull-policy.yaml
+  kubectl apply -f ${global_config_path}/local-cluster/core/kyverno-policies/argocd-image-pull-policy.yaml
 fi
 
 if kubectl get clusterpolicy update-bitnami-image-policy >/dev/null 2>&1; then
