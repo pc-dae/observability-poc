@@ -372,6 +372,7 @@ cluster_exists=$?
 set -e
 if [[ "$reset" -eq 1 || $cluster_exists -ne 0 ]]; then
   kind delete cluster --name observability
+  kind create cluster --name observability --config ${global_config_path}/kind-config.yaml
   new=1
 else
   echo "Kind cluster 'observability' already exists. Skipping creation."
