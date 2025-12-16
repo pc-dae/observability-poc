@@ -484,17 +484,18 @@ timeout=120
 if [[ $new -eq 0 ]]; then
   timeout=30
 fi
-apply_and_wait "local-cluster/core/cert-manager/application.yaml"
 
-apply_and_wait "local-cluster/cert-manager-issuer.yaml"
+apply_and_wait "${global_config_path}/local-cluster/core/cert-manager/application.yaml"
 
-apply_and_wait "local-cluster/core-services-app.yaml"
+apply_and_wait "${global_config_path}/local-cluster/cert-manager-issuer.yaml"
 
-apply_and_wait "local-cluster/core/appsets/metallb" $timeout
+apply_and_wait "${global_config_path}/local-cluster/core-services-app.yaml"
 
-apply_and_wait "local-cluster/metallb-config.yaml"
+apply_and_wait "${global_config_path}/local-cluster/core/appsets/metallb" $timeout
 
-apply_and_wait "local-cluster/core/appsets/ingress" $timeout
+apply_and_wait "${global_config_path}/local-cluster/metallb-config.yaml"
+
+apply_and_wait "${global_config_path}/local-cluster/core/appsets/ingress" $timeout
 
 echo "Waiting for ingress service to be created..."
 while ! kubectl get svc -n ingress-nginx ingress-ingress-nginx-controller > /dev/null 2>&1; do
@@ -510,7 +511,7 @@ config_argocd_ingress
 
 vault-init.sh $debug_str --tls-skip &
 
-apply_and_wait "local-cluster/core/appsets/vault"
+apply_and_wait "${global_config_path}/local-cluster/core/appsets/vault"
 
 vault-unseal.sh $debug_str --tls-skip
 
@@ -532,14 +533,14 @@ secrets.sh $debug_str --tls-skip --secrets secrets/github-secrets.sh
 sleep 10
 kubectl rollout restart deployment -n external-secrets external-secrets
 
-apply_and_wait "local-cluster/grafana-datasources/application.yaml"
+apply_and_wait "${global_config_path}/local-cluster/grafana-datasources/application.yaml"
 
-apply_and_wait "local-cluster/addons.yaml"
+apply_and_wait "${global_config_path}/local-cluster/addons.yaml"
 
 setup_grafana_password
 
 # Apply appsets
-apply_and_wait "local-cluster/addons/appsets"
+apply_and_wait "${global_config_path}/local-cluster/addons/appsets"
 
 setup_vm_otel "vm-one"
 
