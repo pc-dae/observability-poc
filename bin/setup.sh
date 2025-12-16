@@ -337,7 +337,7 @@ function config_argocd_ingress() {
     # Set the public URL in the argocd-cm configmap
     kubectl patch configmap argocd-cm -n argocd --type merge -p '{"data":{"url": "https://argocd.'${LOCAL_DNS}'"}}'
 
-    apply_and_wait "local-cluster/argocd-config/application.yaml"
+    apply_and_wait "local-cluster/argocd-config"
     
     echo "Restarting Argo CD server to apply configuration..."
     kubectl rollout restart deployment argocd-server -n argocd 
