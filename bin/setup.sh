@@ -100,7 +100,7 @@ function apply_and_wait() {
   if [ -d "$application_file" ]; then
     local name=$(basename $application_file)-chart
     export APPSET_NAME=$name
-    export APPSET_PATH=$application_file
+    export APPSET_PATH=${application_file#${global_config_path}/}
     cat ${global_config_path}/resources/template-appsets.yaml | envsubst | kubectl apply -f -
     wait_for_app_sync_and_health "$name" ${timeout:-}
     if [ -f "$application_file/templates/application.yaml" ]; then
