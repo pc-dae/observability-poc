@@ -515,7 +515,7 @@ apply_and_wait "${global_config_path}/local-cluster/core/appsets/vault"
 
 vault-unseal.sh $debug_str --tls-skip
 
-export VAULT_TOKEN="$(jq -r '.root_token' resources/.vault-init.json)"
+export VAULT_TOKEN="$(jq -r '.root_token' secrets/.vault-init.json)"
   kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret

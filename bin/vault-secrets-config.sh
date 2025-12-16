@@ -41,7 +41,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source $SCRIPT_DIR/envs.sh
 
 export VAULT_ADDR="https://vault.${local_dns}"
-export VAULT_TOKEN="$(jq -r '.root_token' resources/.vault-init.json)"
+export VAULT_TOKEN="$(jq -r '.root_token' secrets/.vault-init.json)"
 
 set +e
 

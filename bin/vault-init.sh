@@ -67,5 +67,5 @@ while ( true); do
     echo "Vault already initialized"
     break
   fi
-  vault operator init $tls_skip -format=json > resources/.vault-init.json
+  vault operator init $tls_skip -format=json > secrets/.vault-init.json
 done

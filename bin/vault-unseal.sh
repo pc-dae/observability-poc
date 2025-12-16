@@ -47,9 +47,9 @@ if [ "$(vault status --format=json $tls_skip | jq -r '.sealed')" == "false" ]; t
   exit 0
 fi
 
-key1=$(jq -r '.unseal_keys_b64[0]' resources/.vault-init.json)
-key2=$(jq -r '.unseal_keys_b64[1]' resources/.vault-init.json)
-key3=$(jq -r '.unseal_keys_b64[2]' resources/.vault-init.json)
+key1=$(jq -r '.unseal_keys_b64[0]' secrets/.vault-init.json)
+key2=$(jq -r '.unseal_keys_b64[1]' secrets/.vault-init.json)
+key3=$(jq -r '.unseal_keys_b64[2]' secrets/.vault-init.json)
 
 kubectl -n vault exec --stdin=true --tty=true vault-0 -- vault operator unseal $key1
 kubectl -n vault exec --stdin=true --tty=true vault-0 -- vault operator unseal $key2
