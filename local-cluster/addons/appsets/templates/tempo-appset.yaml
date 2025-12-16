@@ -23,14 +23,14 @@ spec:
               - path: "observability-cluster/config/cluster-params.yaml"
   template:
     metadata:
-      name: '{{.name}}'
+      name: '{{ "{{" }}.name}}'
       namespace: argocd
     spec:
       project: default
       sources:
-        - repoURL: '{{.repo}}'
-          chart: '{{.chart}}'
-          targetRevision: '{{.version}}'
+        - repoURL: '{{ "{{" }}.repo}}'
+          chart: '{{ "{{" }}.chart}}'
+          targetRevision: '{{ "{{" }}.version}}'
           helm:
             values: |
               tempo:
@@ -42,10 +42,10 @@ spec:
           targetRevision: main
           helm:
             values: |
-              dnsSuffix: '{{.dnsSuffix}}'
+              dnsSuffix: '{{ "{{" }}.dnsSuffix}}'
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{.namespace}}'
+        namespace: '{{ "{{" }}.namespace}}'
       syncPolicy:
         automated:
           prune: true

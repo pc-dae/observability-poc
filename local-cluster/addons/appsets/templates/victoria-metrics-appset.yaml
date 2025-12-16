@@ -23,14 +23,14 @@ spec:
               - path: "observability-cluster/config/cluster-params.yaml"
   template:
     metadata:
-      name: '{{.name}}'
+      name: '{{ "{{" }}.name}}'
       namespace: argocd
     spec:
       project: default
       source:
-        repoURL: '{{.repo}}'
-        chart: '{{.chart}}'
-        targetRevision: '{{.version}}'
+        repoURL: '{{ "{{" }}.repo}}'
+        chart: '{{ "{{" }}.chart}}'
+        targetRevision: '{{ "{{" }}.version}}'
         helm:
           values: |
             vminsert:
@@ -41,13 +41,13 @@ spec:
                 annotations:
                   cert-manager.io/cluster-issuer: local-ca-issuer
                 hosts:
-                  - name: victoria-metrics.{{.dnsSuffix}}
+                  - name: victoria-metrics.{{ "{{" }}.dnsSuffix}}
                     path:
                       - /insert
                 tls:
                   - secretName: victoria-metrics-tls
                     hosts:
-                      - victoria-metrics.{{.dnsSuffix}}
+                      - victoria-metrics.{{ "{{" }}.dnsSuffix}}
             vmselect:
               replicaCount: 2
               ingress:
@@ -56,19 +56,19 @@ spec:
                 annotations:
                   cert-manager.io/cluster-issuer: local-ca-issuer
                 hosts:
-                  - name: victoria-metrics.{{.dnsSuffix}}
+                  - name: victoria-metrics.{{ "{{" }}.dnsSuffix}}
                     path:
                       - /select
                       - /
                 tls:
                   - secretName: victoria-metrics-tls
                     hosts:
-                      - victoria-metrics.{{.dnsSuffix}}
+                      - victoria-metrics.{{ "{{" }}.dnsSuffix}}
             vmstorage:
               replicaCount: 2
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{.namespace}}'
+        namespace: '{{ "{{" }}.namespace}}'
       syncPolicy:
         automated:
           prune: true

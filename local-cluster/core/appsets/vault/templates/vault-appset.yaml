@@ -23,14 +23,14 @@ spec:
               - path: observability-cluster/config/cluster-params.yaml
   template:
     metadata:
-      name: '{{.name}}'
+      name: '{{ "{{" }}.name}}'
       namespace: argocd
     spec:
       project: default
       source:
-        repoURL: '{{.repo}}'
-        chart: '{{.chart}}'
-        targetRevision: '{{.version}}'
+        repoURL: '{{ "{{" }}.repo}}'
+        chart: '{{ "{{" }}.chart}}'
+        targetRevision: '{{ "{{" }}.version}}'
         helm:
           values: |
             global:
@@ -66,9 +66,9 @@ spec:
                 tls:
                   - secretName: vault-tls
                     hosts:
-                      - vault.{{.dnsSuffix}}
+                      - vault.{{ "{{" }}.dnsSuffix}}
                 hosts:
-                  - host: vault.{{.dnsSuffix}}
+                  - host: vault.{{ "{{" }}.dnsSuffix}}
               extraVolumes:
               - type: configMap
                 name: local-ca
@@ -78,12 +78,12 @@ spec:
                 subPath: CA.cer
                 readOnly: false
               hostAliases:
-              - ip: '{{.clusterIP}}'
+              - ip: '{{ "{{" }}.clusterIP}}'
                 hostnames:
-                - vault.{{.dnsSuffix}}
+                - vault.{{ "{{" }}.dnsSuffix}}
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{.namespace}}'
+        namespace: '{{ "{{" }}.namespace}}'
       syncPolicy:
         automated:
           prune: true

@@ -23,14 +23,14 @@ spec:
               - path: "observability-cluster/config/cluster-params.yaml"
   template:
     metadata:
-      name: '{{.name}}'
+      name: '{{ "{{" }}.name}}'
       namespace: argocd
     spec:
       project: default
       source:
-        repoURL: '{{.repo}}'
-        chart: '{{.chart}}'
-        targetRevision: '{{.version}}'
+        repoURL: '{{ "{{" }}.repo}}'
+        chart: '{{ "{{" }}.chart}}'
+        targetRevision: '{{ "{{" }}.version}}'
         helm:
           values: |
             loki:
@@ -133,17 +133,17 @@ spec:
                 annotations:
                   cert-manager.io/cluster-issuer: local-ca-issuer
                 hosts:
-                  - host: loki.{{.dnsSuffix}}
+                  - host: loki.{{ "{{" }}.dnsSuffix}}
                     paths:
                       - path: /
                         pathType: Prefix
                 tls:
                   - secretName: loki-tls
                     hosts:
-                      - loki.{{.dnsSuffix}}
+                      - loki.{{ "{{" }}.dnsSuffix}}
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{.namespace}}'
+        namespace: '{{ "{{" }}.namespace}}'
       syncPolicy:
         automated:
           prune: true

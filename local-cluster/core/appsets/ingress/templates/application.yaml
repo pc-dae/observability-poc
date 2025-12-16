@@ -23,7 +23,7 @@ spec:
               - path: observability-cluster/config/cluster-params.yaml
   template:
     metadata:
-      name: '{{.name}}'
+      name: '{{ "{{" }}.name}}'
       namespace: argocd
       annotations:
         argocd.argoproj.io/sync-options: ServerSideApply=true
@@ -31,9 +31,9 @@ spec:
     spec:
       project: default
       source:
-        repoURL: '{{.repo}}'
-        chart: '{{.chart}}'
-        targetRevision: '{{.version}}'
+        repoURL: '{{ "{{" }}.repo}}'
+        chart: '{{ "{{" }}.chart}}'
+        targetRevision: '{{ "{{" }}.version}}'
         helm:
           values: |
             controller:
@@ -57,7 +57,7 @@ spec:
               watchIngressWithoutClass: "true"
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{.namespace}}'
+        namespace: '{{ "{{" }}.namespace}}'
       syncPolicy:
         automated:
           prune: true

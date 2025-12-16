@@ -66,3 +66,25 @@ The error "expected map, got &{[]}" on `.spec.source` usually happens when you t
 Since `local-cluster/namespaces/templates/application.yaml` now uses `sources` (list), but the existing `namespaces` Application on the cluster probably has `source` (map), we need to **delete the existing `namespaces` Application** so it can be recreated with the new schema.
 
 I will proceed to delete the `namespaces` Application to resolve the conflict.
+
+## Resolve MetalLB ApplicationSet Error
+@bash (143-218)
+
+### Response
+The error `Application.argoproj.io "" is invalid: metadata.name: Required value: name or generateName is required` indicates that the ApplicationSet generator produced an empty name `""`.
+
+I discovered that `local-cluster/core/appsets/metallb` is now being deployed as a Helm chart, but the Go template variables in `templates/metallb-appset.yaml` (like `{{.name}}`) were not escaped. As a result, Helm was attempting to evaluate them during the chart rendering process, resulting in empty strings because those variables don't exist in Helm's scope.
+
+To fix this, I will modify `local-cluster/core/appsets/metallb/templates/metallb-appset.yaml` to escape the ArgoCD variables so that Helm ignores them and passes them through to the ApplicationSet controller. For example, replacing `{{.name}}` with `{{ "{{" }}.name}}`.
+
+## Confirmation of Fix
+you haven't applied the fix?
+
+### Response
+Apologies, I identified the issue but did not apply the fix in the previous step. I will now apply the fix to `local-cluster/core/appsets/metallb/templates/metallb-appset.yaml` by escaping the Go template variables.
+
+## Apply Helm Escaping Fix to All AppSets
+please apply the same fix to files in @appsets and @appsets
+
+### Response
+I will iterate through the files in `local-cluster/core/appsets/ingress/templates`, `local-cluster/core/appsets/vault/templates`, and `local-cluster/addons/appsets/templates`. For each file, I will replace unescaped Go template variables (like `{{.name}}`) with Helm-escaped versions (like `{{ "{{" }}.name}}`) to ensures they are correctly rendered by the ArgoCD ApplicationSet controller instead of being consumed by Helm.

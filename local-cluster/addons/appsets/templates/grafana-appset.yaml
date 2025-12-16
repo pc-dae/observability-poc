@@ -23,14 +23,14 @@ spec:
                 - path: "observability-cluster/config/cluster-params.yaml"
   template:
     metadata:
-      name: '{{.name}}'
+      name: '{{ "{{" }}.name}}'
       namespace: argocd
     spec:
       project: default
       source:
-        repoURL: '{{.repo}}'
-        chart: '{{.chart}}'
-        targetRevision: '{{.version}}'
+        repoURL: '{{ "{{" }}.repo}}'
+        chart: '{{ "{{" }}.chart}}'
+        targetRevision: '{{ "{{" }}.version}}'
         helm:
           values: |
             admin:
@@ -39,27 +39,27 @@ spec:
               passwordKey: admin-password
             grafana.ini:
               server:
-                root_url: "https://grafana.{{.dnsSuffix}}"
+                root_url: "https://grafana.{{ "{{" }}.dnsSuffix}}"
                 enable_gzip: true
               auth:
                 oauth_allow_insecure_email_lookup: true
             hostAliases:
-            - ip: '{{.clusterIP}}'
+            - ip: '{{ "{{" }}.clusterIP}}'
               hostnames:
-              - loki.{{.dnsSuffix}}
-              - tempo.{{.dnsSuffix}}
-              - victoria-metrics.{{.dnsSuffix}}
+              - loki.{{ "{{" }}.dnsSuffix}}
+              - tempo.{{ "{{" }}.dnsSuffix}}
+              - victoria-metrics.{{ "{{" }}.dnsSuffix}}
             ingress:
               enabled: true
               ingressClassName: nginx
               annotations:
                 cert-manager.io/cluster-issuer: local-ca-issuer
               hosts:
-                - grafana.{{.dnsSuffix}}
+                - grafana.{{ "{{" }}.dnsSuffix}}
               tls:
                 - secretName: grafana-tls
                   hosts:
-                    - grafana.{{.dnsSuffix}}
+                    - grafana.{{ "{{" }}.dnsSuffix}}
             sidecar:
               dashboards:
                 enabled: true
@@ -75,7 +75,7 @@ spec:
                 readOnly: true
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{.namespace}}'
+        namespace: '{{ "{{" }}.namespace}}'
       syncPolicy:
         automated:
           prune: true

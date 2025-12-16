@@ -23,14 +23,14 @@ spec:
               - path: "observability-cluster/config/cluster-params.yaml"
   template:
     metadata:
-      name: '{{.name}}'
+      name: '{{ "{{" }}.name}}'
       namespace: argocd
     spec:
       project: default
       source:
-        repoURL: '{{.repo}}'
-        chart: '{{.chart}}'
-        targetRevision: '{{.version}}'
+        repoURL: '{{ "{{" }}.repo}}'
+        chart: '{{ "{{" }}.chart}}'
+        targetRevision: '{{ "{{" }}.version}}'
         helm:
           values: |
             fullnameOverride: otel-gateway
@@ -66,11 +66,11 @@ spec:
                     requests:
                       storage: 1Gi
             hostAliases:
-            - ip: '{{.clusterIP}}'
+            - ip: '{{ "{{" }}.clusterIP}}'
               hostnames:
-              - loki.{{.dnsSuffix}}
-              - tempo.{{.dnsSuffix}}
-              - victoria-metrics.{{.dnsSuffix}}
+              - loki.{{ "{{" }}.dnsSuffix}}
+              - tempo.{{ "{{" }}.dnsSuffix}}
+              - victoria-metrics.{{ "{{" }}.dnsSuffix}}
             service:
               enabled: true
               type: ClusterIP
@@ -142,7 +142,7 @@ spec:
 
               exporters:
                 otlphttp/loki:
-                  endpoint: "https://loki.{{.dnsSuffix}}/otlp"
+                  endpoint: "https://loki.{{ "{{" }}.dnsSuffix}}/otlp"
                   sending_queue:
                     enabled: true
                     storage: file_storage
@@ -155,7 +155,7 @@ spec:
                 prometheusremotewrite/victoriametrics:
                   endpoint: "http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8480/insert/0/prometheus/api/v1/write"
                 otlphttp/tempo:
-                  endpoint: "https://tempo.{{.dnsSuffix}}"
+                  endpoint: "https://tempo.{{ "{{" }}.dnsSuffix}}"
                   sending_queue:
                     enabled: true
                     storage: file_storage
@@ -183,7 +183,7 @@ spec:
                     exporters: [otlphttp/loki]
       destination:
         server: 'https://kubernetes.default.svc'
-        namespace: '{{.namespace}}'
+        namespace: '{{ "{{" }}.namespace}}'
       syncPolicy:
         automated:
           prune: true
