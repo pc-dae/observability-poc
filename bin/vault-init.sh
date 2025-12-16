@@ -61,3 +61,5 @@ while ( true); do
   fi
   vault operator init $tls_skip -format=json > secrets/.vault-init.json
 done
+
+vault-unseal.sh $debug_str --tls-skip
