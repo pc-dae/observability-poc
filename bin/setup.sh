@@ -509,7 +509,7 @@ config_argocd_ingress
 
 # With the full params in git, we can now apply the other appsets
 
-vault-init.sh $debug_str --tls-skip &
+vault-init.sh $debug_str --tls-skip 2>/tmp/vault-init.log &
 
 apply_and_wait "${global_config_path}/local-cluster/core/appsets/vault"
 
