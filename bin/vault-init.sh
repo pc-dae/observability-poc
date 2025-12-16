@@ -56,7 +56,7 @@ while ( true); do
   vault status --format=json $tls_skip > /tmp/vault-status.json 2>/dev/null
   set -e
   if [ "$(jq -r '.initialized' /tmp/vault-status.json)" == "true" ]; then
-    echo "Vault already initialized"
+    echo "Vault is initialized"
     break
   fi
   vault operator init $tls_skip -format=json > secrets/.vault-init.json
