@@ -51,14 +51,12 @@ while ( true ); do
   sleep 5
 done
 
-if [ "$(vault status --format=json $tls_skip | jq -r '.initialized')" == "true" ]; then
-  echo "Vault already initialized"
-  exit 0
-fi
-
 while ( true); do
+  set +e
   vault status --format=json $tls_skip > /tmp/vault-status.json
-  if [ $? -ne 0 ]; then
+  status=$?
+  set -e
+  if [ $status -ne 0 ]; then
     echo "Failed to get vault status. Retrying..."
     sleep 5
     continue
