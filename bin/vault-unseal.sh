@@ -54,3 +54,5 @@ key3=$(jq -r '.unseal_keys_b64[2]' secrets/.vault-init.json)
 kubectl -n vault exec --stdin=true --tty=true vault-0 -- vault operator unseal $key1
 kubectl -n vault exec --stdin=true --tty=true vault-0 -- vault operator unseal $key2
 kubectl -n vault exec --stdin=true --tty=true vault-0 -- vault operator unseal $key3
+
+sleep 5
