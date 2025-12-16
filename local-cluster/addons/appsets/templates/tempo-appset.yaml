@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: tempo
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - matrix:
+      generators:
+        - list:
+            elements:
+              - name: tempo
+                namespace: monitoring
+                chart: tempo
+                repo: https://grafana.github.io/helm-charts
+                version: 1.24.0
+        - git:
+            repoURL: 'https://{{ .Values.github_server }}/{{ .Values.config_org }}/{{ .Values.config_repo }}.git'
+            revision: main
+            files:
+              - path: "observability-cluster/config/cluster-params.yaml"
+  template:
+    metadata:
+      name: '{{.name}}'
+      namespace: argocd
+    spec:
+      project: default
+      sources:
+        - repoURL: '{{.repo}}'
+          chart: '{{.chart}}'
+          targetRevision: '{{.version}}'
+          helm:
+            values: |
+              tempo:
+                searchEnabled: true
+              server:
+                grpc_server_min_time_between_pings_ms: 10000
+        - repoURL: 'https://{{ .Values.github_server }}/{{ .Values.config_org }}/{{ .Values.config_repo }}.git'
+          path: local-cluster/charts/tempo-ingress
+          targetRevision: main
+          helm:
+            values: |
+              dnsSuffix: '{{.dnsSuffix}}'
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{.namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - Replace=true

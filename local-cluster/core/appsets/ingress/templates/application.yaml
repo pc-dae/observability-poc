@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ingress
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - matrix:
+      generators:
+        - list:
+            elements:
+              - name: ingress
+                namespace: ingress-nginx
+                chart: ingress-nginx
+                repo: https://kubernetes.github.io/ingress-nginx
+                version: 4.12.0
+        - git:
+            repoURL: 'https://{{ .Values.github_server }}/{{ .Values.config_org }}/{{ .Values.config_repo }}.git'
+            revision: main
+            files:
+              - path: observability-cluster/config/cluster-params.yaml
+  template:
+    metadata:
+      name: '{{.name}}'
+      namespace: argocd
+      annotations:
+        argocd.argoproj.io/sync-options: ServerSideApply=true
+        argocd.argoproj.io/refresh: "hard"
+    spec:
+      project: default
+      source:
+        repoURL: '{{.repo}}'
+        chart: '{{.chart}}'
+        targetRevision: '{{.version}}'
+        helm:
+          values: |
+            controller:
+              service:
+                type: LoadBalancer
+                annotations: {}
+                ports:
+                  http: 80
+                  https: 443
+              hostNetwork: true
+              dnsPolicy: ClusterFirstWithHostNet
+              nodeSelector:
+                node-role.kubernetes.io/control-plane: ""
+              admissionWebhooks:
+                enabled: false
+              service:
+                annotations:
+                  external-dns.alpha.kubernetes.io/hostname: '{{.dnsSuffix}}'
+              ingressClassResource:
+                default: "true"
+              watchIngressWithoutClass: "true"
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{.namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - Replace=true

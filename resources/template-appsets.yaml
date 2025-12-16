@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: $APPSET_NAME
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/pc-dae/observability-poc.git'
+    targetRevision: main
+    path: $APPSET_PATH
+    helm:
+      values: |
+        github_server: $GITHUB_SERVER
+        config_org: $GITHUB_CONFIG_ORG
+        config_repo: $GITHUB_CONFIG_REPO
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true

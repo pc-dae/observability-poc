@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-observability-poc
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  url: https://$GITHUB_SERVER/$GITHUB_MGMT_ORG/$GITHUB_MGMT_REPO.git
+  username: $GITHUB_USER
+  password: $GITHUB_TOKEN_READ
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-config
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  url: https://$GITHUB_SERVER/$GITHUB_CONFIG_ORG/$GITHUB_CONFIG_REPO.git
+  username: $GITHUB_USER
+  password: $GITHUB_TOKEN_READ

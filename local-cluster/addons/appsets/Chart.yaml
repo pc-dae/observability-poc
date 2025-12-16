@@ -1,0 +1,7 @@
+apiVersion: v2
+name: appsets
+description: ApplicationSets for observability addons
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+

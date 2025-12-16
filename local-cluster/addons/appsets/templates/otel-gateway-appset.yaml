@@ -1,0 +1,193 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: otel-gateway
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - matrix:
+      generators:
+        - list:
+            elements:
+              - name: otel-gateway
+                namespace: otel-collector
+                chart: opentelemetry-collector
+                repo: https://open-telemetry.github.io/opentelemetry-helm-charts
+                version: 0.139.1
+        - git:
+            repoURL: 'https://{{ .Values.github_server }}/{{ .Values.config_org }}/{{ .Values.config_repo }}.git'
+            revision: main
+            files:
+              - path: "observability-cluster/config/cluster-params.yaml"
+  template:
+    metadata:
+      name: '{{.name}}'
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: '{{.repo}}'
+        chart: '{{.chart}}'
+        targetRevision: '{{.version}}'
+        helm:
+          values: |
+            fullnameOverride: otel-gateway
+            mode: statefulset
+            clusterRole:
+              create: true
+              rules:
+              - apiGroups: [""]
+                resources: ["nodes", "nodes/proxy", "nodes/metrics", "services", "endpoints", "pods", "namespaces", "configmaps"]
+                verbs: ["get", "list", "watch"]
+              - nonResourceURLs: ["/metrics"]
+                verbs: ["get"]
+            image:
+              repository: "otel/opentelemetry-collector-contrib"
+              tag: "0.139.0"
+            extraVolumes:
+            - name: local-ca
+              configMap:
+                name: local-ca
+            extraVolumeMounts:
+            - name: local-ca
+              mountPath: /etc/ssl/certs/ca.crt
+              subPath: CA.cer
+            - name: otel-storage
+              mountPath: /var/lib/otelcol
+            statefulset:
+              volumeClaimTemplates:
+              - metadata:
+                  name: otel-storage
+                spec:
+                  accessModes: [ "ReadWriteOnce" ]
+                  resources:
+                    requests:
+                      storage: 1Gi
+            hostAliases:
+            - ip: '{{.clusterIP}}'
+              hostnames:
+              - loki.{{.dnsSuffix}}
+              - tempo.{{.dnsSuffix}}
+              - victoria-metrics.{{.dnsSuffix}}
+            service:
+              enabled: true
+              type: ClusterIP
+            
+            presets:
+              clusterMetrics:
+                enabled: true 
+              
+            config:
+              extensions:
+                health_check: {}
+                file_storage:
+                  directory: /var/lib/otelcol/file_storage
+                  create_directory: true
+                  timeout: 1s
+                  compaction:
+                    on_start: true
+                    directory: /var/lib/otelcol/file_storage_compaction
+
+              receivers:
+                otlp:
+                  protocols:
+                    grpc:
+                      endpoint: 0.0.0.0:4317
+                    http:
+                      endpoint: 0.0.0.0:4318
+                k8s_cluster:
+                  collection_interval: 10s
+                  auth_type: serviceAccount
+                prometheus:
+                  config:
+                    scrape_configs:
+                      - job_name: 'victoria-metrics'
+                        scrape_interval: 15s
+                        static_configs:
+                          - targets:
+                              - 'victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8428'
+                      - job_name: 'kubernetes-apiserver'
+                        scrape_interval: 15s
+                        scheme: https
+                        tls_config:
+                          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                          insecure_skip_verify: true
+                        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+                        static_configs:
+                          - targets: ['kubernetes.default.svc:443']
+                      - job_name: 'coredns'
+                        scrape_interval: 15s
+                        static_configs:
+                          - targets: ['kube-dns.kube-system.svc:9153']
+                      - job_name: 'kube-state-metrics'
+                        scrape_interval: 15s
+                        static_configs:
+                          - targets: ['kube-state-metrics.monitoring.svc:8080']
+              
+              processors:
+                attributes:
+                  actions:
+                    - key: cluster
+                      value: "local-cluster"
+                      action: upsert
+                batch:
+                  timeout: 1s
+                  send_batch_size: 1024
+                memory_limiter:
+                  check_interval: 1s
+                  limit_percentage: 75
+                  spike_limit_percentage: 15
+
+              exporters:
+                otlphttp/loki:
+                  endpoint: "https://loki.{{.dnsSuffix}}/otlp"
+                  sending_queue:
+                    enabled: true
+                    storage: file_storage
+                  retry_on_failure:
+                    enabled: true
+                  headers:
+                    X-Scope-OrgID: "fake"
+                  tls:
+                    ca_file: /etc/ssl/certs/ca.crt
+                prometheusremotewrite/victoriametrics:
+                  endpoint: "http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8480/insert/0/prometheus/api/v1/write"
+                otlphttp/tempo:
+                  endpoint: "https://tempo.{{.dnsSuffix}}"
+                  sending_queue:
+                    enabled: true
+                    storage: file_storage
+                  retry_on_failure:
+                    enabled: true
+                  headers:
+                    X-Scope-OrgID: "fake"
+                  tls:
+                    ca_file: /etc/ssl/certs/ca.crt
+
+              service:
+                extensions: [file_storage, health_check]
+                pipelines:
+                  traces:
+                    receivers: [otlp]
+                    processors: [memory_limiter, batch]
+                    exporters: [otlphttp/tempo]
+                  metrics:
+                    receivers: [otlp, k8s_cluster, prometheus]
+                    processors: [memory_limiter, attributes, batch]
+                    exporters: [prometheusremotewrite/victoriametrics]
+                  logs:
+                    receivers: [otlp]
+                    processors: [memory_limiter, batch]
+                    exporters: [otlphttp/loki]
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{.namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - Replace=true

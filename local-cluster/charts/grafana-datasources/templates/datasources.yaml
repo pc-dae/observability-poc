@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-datasources
+  namespace: grafana
+  labels:
+    grafana_datasource: "1"
+stringData:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Loki
+      type: loki
+      uid: loki
+      url: https://loki.{{ .Values.dnsSuffix }}
+      access: proxy
+      jsonData:
+        tlsSkipVerify: false
+        tlsAuthWithCACert: true
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        tlsCACert: |
+{{ .Values.caCert | nindent 10 }}
+        httpHeaderValue1: "fake"
+    - name: Tempo
+      type: tempo
+      uid: tempo
+      url: https://tempo.{{ .Values.dnsSuffix }}
+      access: proxy
+      jsonData:
+        tlsSkipVerify: false
+        tlsAuthWithCACert: true
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        tlsCACert: |
+{{ .Values.caCert | nindent 10 }}
+        httpHeaderValue1: "fake"
+    - name: VictoriaMetrics
+      type: prometheus
+      uid: victoria-metrics
+      url: https://victoria-metrics.{{ .Values.dnsSuffix }}/select/0/prometheus/
+      access: proxy
+      isDefault: true
+      jsonData:
+        tlsSkipVerify: false
+        tlsAuthWithCACert: true
+        prometheusType: VictoriaMetrics
+      secureJsonData:
+        tlsCACert: |
+{{ .Values.caCert | nindent 10 }}

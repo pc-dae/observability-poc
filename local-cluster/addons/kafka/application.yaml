@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://charts.bitnami.com/bitnami'
+    chart: kafka
+    targetRevision: 20.0.0
+    helm:
+      values: |
+        global:
+          imageRegistry: docker.io
+        image:
+          repository: bitnamilegacy/kafka
+          tag: 3.7.0-debian-12-r0
+        diagnosticMode:
+          image:
+            repository: bitnamilegacy/kafka
+            tag: 3.7.0-debian-12-r0
+        zookeeper:
+          image:
+            registry: docker.io
+            repository: bitnamilegacy/zookeeper
+            tag: 3.9.2-debian-12-r0
+        provisioning:
+          enabled: true
+          automountServiceAccountToken: true
+          numPartitions: 1
+          replicationFactor: 1
+          topics:
+            - name: infra
+              partitions: 1
+              replicationFactor: 1
+              config:
+                max.message.bytes: 64000
+                flush.messages: 1
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kafka
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - Replace=true

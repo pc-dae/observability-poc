@@ -1,0 +1,13 @@
+dnsSuffix: kubernetes.docker.internal
+clusterIP: ${CLUSTER_IP}
+storageClass: standard
+namespaces:
+ - vault
+ - ingress-nginx
+ - monitoring
+ - kafka
+ - argocd
+ - grafana
+ - otel-collector
+ - cert-manager
+ - victoria-metrics

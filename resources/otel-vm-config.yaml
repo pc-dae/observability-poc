@@ -1,0 +1,85 @@
+extensions:
+  health_check: {}
+  file_storage:
+    directory: /var/lib/otelcol/file_storage
+    create_directory: true
+    timeout: 1s
+    compaction:
+      on_start: true
+      directory: /var/lib/otelcol/file_storage_compaction
+
+receivers:
+  hostmetrics:
+    collection_interval: 10s
+    scrapers:
+      cpu: {}
+      memory: {}
+      load: {}
+      network: {}
+      disk: {}
+      filesystem: {}
+  filelog:
+    include: [ /var/log/syslog, /var/log/auth.log, /var/log/kern.log ]
+    start_at: end
+
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 75
+    spike_limit_percentage: 15
+  resourcedetection:
+    detectors: [system]
+    timeout: 2s
+    override: false
+  resource:
+    attributes:
+    - key: service.name
+      value: ubuntu-vm
+      action: insert
+    - key: host.name
+      value: $VM_NAME
+      action: insert
+
+exporters:
+  prometheusremotewrite/victoriametrics:
+    endpoint: "http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8480/insert/0/prometheus/api/v1/write"
+  otlphttp/loki:
+    endpoint: "https://loki.{{.dnsSuffix}}/otlp"
+    sending_queue:
+      enabled: true
+      storage: file_storage
+    retry_on_failure:
+      enabled: true
+    headers:
+      X-Scope-OrgID: "$VM_NAME"
+    tls:
+      ca_file: /etc/ssl/certs/ca.crt
+  otlphttp/tempo:
+    endpoint: "https://tempo.{{.dnsSuffix}}"
+    sending_queue:
+      enabled: true
+      storage: file_storage
+    retry_on_failure:
+      enabled: true
+    headers:
+      X-Scope-OrgID: "$VM_NAME"
+    tls:
+      ca_file: /etc/ssl/certs/ca.crt
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/tempo]
+    metrics:
+      receivers: [hostmetrics]
+      processors: [memory_limiter, resourcedetection, resource, batch]
+      exporters: [prometheusremotewrite/victoriametrics]
+    logs:
+      receivers: [filelog]
+      processors: [memory_limiter, resourcedetection, resource, batch]
+      exporters: [otlphttp/loki]
