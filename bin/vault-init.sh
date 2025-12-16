@@ -50,7 +50,7 @@ while ( true ); do
   fi
   sleep 5
 done
-
+rm -rf /tmp/vault-status.json
 while ( true); do
   set +e
   vault status --format=json $tls_skip > /tmp/vault-status.json 2>/dev/null
