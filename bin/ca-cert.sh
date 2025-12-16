@@ -50,9 +50,7 @@ if [[ "$OSTYPE" == "linux"* ]]; then
   sudo update-ca-certificates
 else
   if [ "$NOSUDO" == "true" ]; then
-    echo "WARNING: NOSUDO is set, deploy certificate manually then rerun setup.sh"
-    echo "sudo security add-trusted-cert -d -r trustRoot -p ssl -p basic -k /Library/Keychains/System.keychain CA.cer"
-    exit 1
+    echo "WARNING: NOSUDO deploy certificate manually"
   else
     sudo security add-trusted-cert -d -r trustRoot -p ssl -p basic -k /Library/Keychains/System.keychain CA.cer
   fi
