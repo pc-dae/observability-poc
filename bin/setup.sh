@@ -12,7 +12,7 @@ function usage()
     echo "This script will initialize kind kubernetes cluster for observability proof of concept" >&2
     echo "  --debug: emmit debugging information" >&2
     echo "  --reset: recreate observability kind cluster" >&2
-    echo "  --reapplt: redo argocd configuration" >&2
+    echo "  --reapply: redo argocd configuration" >&2
 }
 
 function args()
