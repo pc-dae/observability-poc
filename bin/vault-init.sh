@@ -17,10 +17,11 @@ function args() {
   arg_count=${#arg_list[@]}
   arg_index=0
   tls_skip=""
+  debug_str=""
   while (( arg_index < arg_count )); do
     case "${arg_list[${arg_index}]}" in
           "--tls-skip") tls_skip="-tls-skip-verify";;
-          "--debug") set -x;;
+          "--debug") set -x; debug_str="--debug";;
                "-h") usage; exit;;
            "--help") usage; exit;;
                "-?") usage; exit;;
@@ -63,3 +64,5 @@ while ( true); do
 done
 
 vault-unseal.sh $debug_str --tls-skip
+
+vault-secrets-config.sh $debug_str --tls-skip

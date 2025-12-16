@@ -524,8 +524,6 @@ data:
   vault_token: $(echo -n "$VAULT_TOKEN" | base64 ${b64w})
 EOF
 
-vault-secrets-config.sh $debug_str --tls-skip
-
 secrets.sh $debug_str --tls-skip --secrets secrets/github-secrets.sh
 
 sleep 10
