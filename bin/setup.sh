@@ -98,7 +98,7 @@ function apply_and_wait() {
   fi
 
   if [ -d "$application_file" ]; then
-    local name=$($basename $application_file)-chart
+    local name=$(basename $application_file)-chart
     export APPSET_NAME=$name
     export APPSET_PATH=$application_file
     cat ${global_config_path}/resources/template-appsets.yaml | envsubst | kubectl apply -f -
