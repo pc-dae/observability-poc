@@ -349,7 +349,7 @@ function config_argocd_ingress() {
   fi
 
   echo "Logging in to Argo CD via Ingress..."
-  ARGOCD_PASSWORD=$(cat resources/.argocd-admin-password)
+  ARGOCD_PASSWORD=$(cat secrets/.argocd-admin-password)
   # Retry login in case server is not immediately ready
   for i in {1..5}; do
     if argocd login "argocd.${LOCAL_DNS}" --grpc-web --username admin --password "$ARGOCD_PASSWORD"; then
