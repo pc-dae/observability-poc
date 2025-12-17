@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-datasources
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://{{ .Values.github_server }}/{{ .Values.config_org }}/{{ .Values.config_repo }}.git'
+      targetRevision: main
+      ref: config
+    - repoURL: 'https://github.com/pc-dae/observability-poc.git'
+      targetRevision: main
+      path: local-cluster/charts/grafana-datasources
+      helm:
+        valueFiles:
+        - $config/observability-cluster/config/cluster-params.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: grafana
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - Replace=true

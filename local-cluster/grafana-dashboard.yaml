@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/pc-dae/observability-poc.git'
-    path: local-cluster/addons
+    path: local-cluster/addons/grafana/dashboards
     targetRevision: main
   destination:
     server: 'https://kubernetes.default.svc'

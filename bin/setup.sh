@@ -529,7 +529,9 @@ secrets.sh $debug_str --tls-skip --secrets secrets/github-secrets.sh
 sleep 10
 kubectl rollout restart deployment -n external-secrets external-secrets
 
-apply_and_wait "${global_config_path}/local-cluster/grafana-datasources/application.yaml"
+apply_and_wait "${global_config_path}/local-cluster/addons/grafana/datasources"
+
+apply_and_wait "${global_config_path}/local-cluster/grafana-dashboards.yaml"
 
 apply_and_wait "${global_config_path}/local-cluster/addons.yaml"
 
