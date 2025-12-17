@@ -91,6 +91,10 @@ function wait_for_app_sync_and_health() {
 function apply_and_wait() {
   local application_file=$1
   local timeout=${2:-}
+  if [ ! -e "$application_file" ]; then
+    echo "Application file '$application_file' does not exist."
+    return 1
+  fi
   if [ -f "$application_file" ]; then
     local name=$(yq '.metadata.name' $application_file)
     kubectl apply -f $application_file
