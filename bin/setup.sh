@@ -287,8 +287,7 @@ function setup_vm_otel() {
   multipass exec $VM_NAME -- sudo sh -c "apt-get update && apt-get install -y curl"
   
   # Check if already installed
-  multipass exec $VM_NAME -- dpkg -l otelcol-contrib
-  if [[ $? -ne 0 ]]; then
+  if [[ $(multipass exec $VM_NAME -- dpkg -l otelcol-contrib 2>&1 | grep "no packages found" | wc -l) -ne 0 ]]; then
       ARCH=$(multipass exec $VM_NAME -- dpkg --print-architecture)
       echo "VM Architecture: $ARCH"
       
