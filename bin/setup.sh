@@ -329,6 +329,7 @@ function setup_vm_otel() {
 
   # Restart Service
   echo "Restarting OTel Collector Service..."
+  multipass exec $VM_NAME -- sudo usermod -aG adm otelcol-contrib
   multipass exec $VM_NAME -- sudo systemctl restart otelcol-contrib
   multipass exec $VM_NAME -- sudo systemctl enable otelcol-contrib
   
