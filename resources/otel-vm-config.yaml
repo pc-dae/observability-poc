@@ -76,6 +76,7 @@ exporters:
       ca_file: /etc/otelcol-contrib/ca.crt
 
 service:
+  extensions: [health_check, file_storage]
   pipelines:
     traces:
       receivers: [otlp]
