@@ -322,6 +322,11 @@ function setup_vm_otel() {
   multipass exec $VM_NAME -- sudo mv config.yaml /etc/otelcol-contrib/config.yaml
   multipass exec $VM_NAME -- sudo chmod 644 /etc/otelcol-contrib/config.yaml
 
+  # Ensure file storage directory exists and has correct permissions
+  multipass exec $VM_NAME -- sudo mkdir -p /var/lib/otelcol/file_storage
+  multipass exec $VM_NAME -- sudo chown -R otelcol-contrib:otelcol-contrib /var/lib/otelcol
+  multipass exec $VM_NAME -- sudo chmod 750 /var/lib/otelcol
+
   # Restart Service
   echo "Restarting OTel Collector Service..."
   multipass exec $VM_NAME -- sudo systemctl restart otelcol-contrib
