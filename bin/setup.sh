@@ -316,6 +316,7 @@ function setup_vm_otel() {
   else
       echo "Warning: resources/CA.cer not found. TLS validation might fail."
   fi
+  export VM_NAME
   cat ${global_config_path}/resources/otel-vm-config.yaml | envsubst > /tmp/$VM_NAME-otel.yaml
   multipass transfer /tmp/$VM_NAME-otel.yaml $VM_NAME:config.yaml
   multipass exec $VM_NAME -- sudo mv config.yaml /etc/otelcol-contrib/config.yaml
