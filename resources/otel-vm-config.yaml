@@ -49,7 +49,9 @@ processors:
 
 exporters:
   prometheusremotewrite/victoriametrics:
-    endpoint: "http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8480/insert/0/prometheus/api/v1/write"
+    endpoint: "https://victoria-metrics.$LOCAL_DNS/insert/0/prometheus/api/v1/write"
+    tls:
+      ca_file: /etc/ssl/certs/ca.crt
   otlphttp/loki:
     endpoint: "https://loki.$LOCAL_DNS/otlp"
     sending_queue:
