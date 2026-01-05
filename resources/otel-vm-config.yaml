@@ -51,7 +51,7 @@ exporters:
   prometheusremotewrite/victoriametrics:
     endpoint: "https://victoria-metrics.$LOCAL_DNS/insert/0/prometheus/api/v1/write"
     tls:
-      ca_file: /etc/ssl/certs/ca.crt
+      ca_file: /etc/otelcol-contrib/ca.crt
   otlphttp/loki:
     endpoint: "https://loki.$LOCAL_DNS/otlp"
     sending_queue:
@@ -62,7 +62,7 @@ exporters:
     headers:
       X-Scope-OrgID: "$VM_NAME"
     tls:
-      ca_file: /etc/ssl/certs/ca.crt
+      ca_file: /etc/otelcol-contrib/ca.crt
   otlphttp/tempo:
     endpoint: "https://tempo.$LOCAL_DNS"
     sending_queue:
@@ -73,7 +73,7 @@ exporters:
     headers:
       X-Scope-OrgID: "$VM_NAME"
     tls:
-      ca_file: /etc/ssl/certs/ca.crt
+      ca_file: /etc/otelcol-contrib/ca.crt
 
 service:
   pipelines:
