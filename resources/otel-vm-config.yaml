@@ -9,6 +9,10 @@ extensions:
       directory: /var/lib/otelcol/file_storage_compaction
 
 receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
   hostmetrics:
     collection_interval: 10s
     scrapers:
@@ -47,7 +51,7 @@ exporters:
   prometheusremotewrite/victoriametrics:
     endpoint: "http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8480/insert/0/prometheus/api/v1/write"
   otlphttp/loki:
-    endpoint: "https://loki.{{.dnsSuffix}}/otlp"
+    endpoint: "https://loki.$LOCAL_DNS/otlp"
     sending_queue:
       enabled: true
       storage: file_storage
@@ -58,7 +62,7 @@ exporters:
     tls:
       ca_file: /etc/ssl/certs/ca.crt
   otlphttp/tempo:
-    endpoint: "https://tempo.{{.dnsSuffix}}"
+    endpoint: "https://tempo.$LOCAL_DNS"
     sending_queue:
       enabled: true
       storage: file_storage
