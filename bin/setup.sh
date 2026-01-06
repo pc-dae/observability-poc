@@ -350,6 +350,66 @@ function setup_vm_otel() {
   echo "VM Setup Complete."
 }
 
+function setup_vm_splunk() {
+  local VM_NAME=${1:-"vm-one"}
+  echo "Setting up Splunk on VM '$VM_NAME'..."
+
+  if ! command -v multipass &> /dev/null; then
+    echo "Multipass could not be found. Please install it to proceed."
+    return
+  fi
+
+  # Ensure VM exists and is running (it should be, via setup_vm_otel or earlier calls)
+  if ! multipass info $VM_NAME &> /dev/null; then
+    echo "Launching $VM_NAME..."
+    multipass launch --name $VM_NAME --cpus 4 --memory 8G --disk 20G
+  else
+    # Ensure it is running
+    multipass start $VM_NAME 2>/dev/null || true
+  fi
+  
+  # Install Docker if not present
+  echo "Checking Docker installation on VM..."
+  if ! multipass exec $VM_NAME -- which docker &> /dev/null; then
+      echo "Installing Docker..."
+      multipass exec $VM_NAME -- sudo apt-get update
+      multipass exec $VM_NAME -- sudo apt-get install -y docker.io
+      multipass exec $VM_NAME -- sudo usermod -aG docker ubuntu
+      echo "Docker installed."
+  else
+      echo "Docker already installed."
+  fi
+
+  # Run Splunk container
+  # Using uroni/splunk:9.1.0 as agreed for ARM64 compatibility
+  echo "Starting Splunk container..."
+  
+  setup_splunk_password
+  local SPLUNK_PASS=$(cat secrets/.splunk-password)
+
+  # Check if container exists
+  if multipass exec $VM_NAME -- sudo docker ps -a --format '{{.Names}}' | grep -q "^splunk$"; then
+      echo "Splunk container already exists. Checking status..."
+      if ! multipass exec $VM_NAME -- sudo docker ps --format '{{.Names}}' | grep -q "^splunk$"; then
+          echo "Starting existing Splunk container..."
+          multipass exec $VM_NAME -- sudo docker start splunk
+      else
+          echo "Splunk container is running."
+      fi
+  else
+      echo "Deploying new Splunk container..."
+      multipass exec $VM_NAME -- sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 \
+        -e SPLUNK_START_ARGS=--accept-license \
+        -e SPLUNK_PASSWORD="$SPLUNK_PASS" \
+        --name splunk \
+        --restart always \
+        uroni/splunk:9.1.0
+      echo "Splunk container deployed."
+  fi
+  
+  echo "Splunk available at http://$(multipass info $VM_NAME | grep IPv4 | awk '{print $2}'):8000"
+}
+
 function config_argocd_ingress() {
   local expected_url="https://argocd.${LOCAL_DNS}"
   local current_url=$(kubectl get configmap argocd-cm -n argocd -o jsonpath='{.data.url}' 2>/dev/null)
@@ -569,4 +629,5 @@ setup_grafana_password
 apply_and_wait "${global_config_path}/local-cluster/addons/appsets"
 
 setup_vm_otel "vm-one"
+setup_vm_splunk "vm-one"
 
