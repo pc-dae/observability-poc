@@ -1,3 +1,5 @@
+# Does not work on macbook silcon, keeping this here for reference
+
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:

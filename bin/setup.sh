@@ -268,7 +268,7 @@ function setup_vm_otel() {
 
   if ! multipass info $VM_NAME &> /dev/null; then
     echo "Launching $VM_NAME..."
-    multipass launch --name $VM_NAME --cpus 2 --memory 2G --disk 10G
+    multipass launch --name $VM_NAME --cpus 4 --memory 8G --disk 20G
   else
     echo "VM $VM_NAME already exists."
     # Ensure it is running
@@ -560,7 +560,7 @@ apply_and_wait "${global_config_path}/local-cluster/addons/grafana/datasources"
 
 apply_and_wait "${global_config_path}/local-cluster/grafana-dashboards.yaml"
 
-kubectl apply -f https://github.com/splunk/splunk-operator/releases/download/3.0.0/splunk-operator-crds.yaml --server-side
+# kubectl apply -f https://github.com/splunk/splunk-operator/releases/download/3.0.0/splunk-operator-crds.yaml --server-side
 apply_and_wait "${global_config_path}/local-cluster/addons.yaml"
 
 setup_grafana_password
