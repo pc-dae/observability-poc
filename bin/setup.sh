@@ -142,6 +142,20 @@ b64w=""
 
 export LOCAL_DNS="$local_dns"
 
+
+function setup_splunk_password() {
+  echo "Setting up Splunk password..."
+  if [ -f "secrets/.splunk-password" ]; then
+    echo "Using existing generated password."
+  else
+    echo "Generating new Splunk password..."
+    local SPLUNK_PASSWORD
+    SPLUNK_PASSWORD=$(openssl rand -base64 12)
+    echo -n "$SPLUNK_PASSWORD" > secrets/.splunk-password
+  fi
+  export SPLUNK_PASSWORD=$(cat secrets/.splunk-password)
+}
+
 function setup_argocd_password() {
   echo "Setting up Argo CD password..."
   if [ -f "secrets/.argocd-admin-password" ]; then
@@ -534,6 +548,9 @@ data:
   vault_token: $(echo -n "$VAULT_TOKEN" | base64 ${b64w})
 EOF
 
+kubectl apply -f ${global_config_path}/local-cluster/secrets/vault-store.yaml
+
+setup_splunk_password
 secrets.sh $debug_str --tls-skip --secrets secrets/github-secrets.sh
 
 sleep 10

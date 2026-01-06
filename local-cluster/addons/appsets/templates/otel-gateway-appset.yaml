@@ -71,6 +71,7 @@ spec:
               - loki.{{ "{{" }}.dnsSuffix}}
               - tempo.{{ "{{" }}.dnsSuffix}}
               - victoria-metrics.{{ "{{" }}.dnsSuffix}}
+              - mimir.{{ "{{" }}.dnsSuffix}}
             service:
               enabled: true
               type: ClusterIP
@@ -153,7 +154,11 @@ spec:
                   tls:
                     ca_file: /etc/ssl/certs/ca.crt
                 prometheusremotewrite/victoriametrics:
-                  endpoint: "http://victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8480/insert/0/prometheus/api/v1/write"
+                  endpoint: "http://victoria-metrics.{{ "{{" }}.dnsSuffix}}/insert/0/prometheus/api/v1/write"
+                prometheusremotewrite/mimir:
+                  endpoint: "https://mimir.{{ "{{" }}.dnsSuffix}}/api/v1/push"
+                  tls:
+                    ca_file: /etc/ssl/certs/ca.crt
                 otlphttp/tempo:
                   endpoint: "https://tempo.{{ "{{" }}.dnsSuffix}}"
                   sending_queue:
@@ -176,7 +181,7 @@ spec:
                   metrics:
                     receivers: [otlp, k8s_cluster, prometheus]
                     processors: [memory_limiter, attributes, batch]
-                    exporters: [prometheusremotewrite/victoriametrics]
+                    exporters: [prometheusremotewrite/victoriametrics, prometheusremotewrite/mimir]
                   logs:
                     receivers: [otlp]
                     processors: [memory_limiter, batch]

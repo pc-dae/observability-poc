@@ -12,6 +12,7 @@ Add the following to your `/etc/hosts` file...
 127.0.0.1 argocd.observability.kubernetes.internal
 127.0.0.1 loki.observability.kubernetes.internal
 127.0.0.1 tempo.observability.kubernetes.internal
+127.0.0.1 mimir.observability.kubernetes.internal
 127.0.0.1 victoria-metrics.observability.kubernetes.internal
 ```
 

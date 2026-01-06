@@ -48,3 +48,17 @@ stringData:
       secureJsonData:
         tlsCACert: |
 {{ .Values.caCert | nindent 10 }}
+        httpHeaderValue1: "fake"
+    - name: Mimir
+      type: prometheus
+      uid: mimir
+      url: https://mimir.{{ .Values.dnsSuffix }}
+      access: proxy
+      isDefault: true
+      jsonData:
+        tlsSkipVerify: false
+        tlsAuthWithCACert: true
+        prometheusType: Mimir
+      secureJsonData:
+        tlsCACert: |
+{{ .Values.caCert | nindent 10 }}

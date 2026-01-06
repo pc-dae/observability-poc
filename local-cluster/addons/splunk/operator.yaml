@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: splunk-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: splunk-operator
+    repoURL: https://splunk.github.io/splunk-operator/
+    targetRevision: 3.0.0 # Use the latest stable version
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: splunk-operator
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

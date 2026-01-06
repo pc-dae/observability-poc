@@ -48,6 +48,10 @@ processors:
       action: insert
 
 exporters:
+  prometheusremotewrite/mimir:
+    endpoint: "https://mimir.$LOCAL_DNS"
+    tls:
+      ca_file: /etc/otelcol-contrib/ca.crt
   prometheusremotewrite/victoriametrics:
     endpoint: "https://victoria-metrics.$LOCAL_DNS/insert/0/prometheus/api/v1/write"
     tls:
@@ -85,7 +89,7 @@ service:
     metrics:
       receivers: [hostmetrics]
       processors: [memory_limiter, resourcedetection, resource, batch]
-      exporters: [prometheusremotewrite/victoriametrics]
+      exporters: [prometheusremotewrite/victoriametrics, prometheusremotewrite/mimir]
     logs:
       receivers: [filelog]
       processors: [memory_limiter, resourcedetection, resource, batch]

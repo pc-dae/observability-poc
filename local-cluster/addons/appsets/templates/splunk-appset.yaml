@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: splunk
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - matrix:
+      generators:
+        - list:
+            elements:
+              - name: s1
+                namespace: splunk
+        - git:
+            repoURL: 'https://{{ .Values.github_server }}/{{ .Values.config_org }}/{{ .Values.config_repo }}.git'
+            revision: main
+            files:
+              - path: "observability-cluster/config/cluster-params.yaml"
+  template:
+    metadata:
+      name: '{{ "{{" }}.name}}'
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: 'https://{{ .Values.github_server }}/{{ .Values.config_org }}/{{ .Values.config_repo }}.git'
+        path: local-cluster/charts/splunk
+        targetRevision: main
+        helm:
+          values: |
+            dnsSuffix: '{{ "{{" }}.dnsSuffix}}'
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{ "{{" }}.namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - Replace=true

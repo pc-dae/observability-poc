@@ -11,3 +11,4 @@ namespaces:
  - otel-collector
  - cert-manager
  - victoria-metrics
+ - splunk
