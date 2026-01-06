@@ -53,5 +53,5 @@ vault kv put ${tls_skip} -mount=secrets github-repo-write-credentials username=t
 
 vault kv put ${tls_skip} -mount=secrets github-repo-write-token token=${GITHUB_TOKEN_WRITE}
 
-vault kv put ${tls_skip} -mount=secrets splunk-secret password=${SPLUNK_PASSWORD}
+vault kv put ${tls_skip} -mount=secrets splunk-hec-secret token=${SPLUNK_TOKEN}
 
