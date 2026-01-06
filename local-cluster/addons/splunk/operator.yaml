@@ -14,7 +14,7 @@ spec:
         splunkOperator:
           splunkGeneralTerms: "--accept-sgt-current-at-splunk-com"
         image:
-          repository: splunk/splunk:9.1.0
+          repository: uroni/splunk:9.1.0
 
   destination:
     server: https://kubernetes.default.svc
