@@ -67,6 +67,14 @@ exporters:
       X-Scope-OrgID: "$VM_NAME"
     tls:
       ca_file: /etc/otelcol-contrib/ca.crt
+  splunk_hec:
+    token: "$SPLUNK_HEC_TOKEN"
+    endpoint: "https://prd-p-fxrik.splunkcloud.com:8088/services/collector/event"
+    tls:
+      insecure_skip_verify: true
+    source: "otel-vm"
+    sourcetype: "otel:logs"
+    index: "main"
   otlphttp/tempo:
     endpoint: "https://tempo.$LOCAL_DNS"
     sending_queue:
@@ -93,4 +101,4 @@ service:
     logs:
       receivers: [filelog]
       processors: [memory_limiter, resourcedetection, resource, batch]
-      exporters: [otlphttp/loki]
+      exporters: [otlphttp/loki, splunk_hec]

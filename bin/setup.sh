@@ -327,6 +327,7 @@ function setup_vm_otel() {
       echo "Warning: resources/CA.cer not found. TLS validation might fail."
   fi
   export VM_NAME
+  export SPLUNK_HEC_TOKEN=$SPLUNK_TOKEN
   cat ${global_config_path}/resources/otel-vm-config.yaml | envsubst > /tmp/$VM_NAME-otel.yaml
   multipass transfer /tmp/$VM_NAME-otel.yaml $VM_NAME:config.yaml
   multipass exec $VM_NAME -- sudo mv config.yaml /etc/otelcol-contrib/config.yaml
