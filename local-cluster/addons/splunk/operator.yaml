@@ -9,6 +9,10 @@ spec:
     chart: splunk-operator
     repoURL: https://splunk.github.io/splunk-operator/
     targetRevision: 3.0.0 # Use the latest stable version
+    helm:
+      values: |
+        splunkOperator:
+          splunkGeneralTerms: "--accept-sgt-current-at-splunk-com"
   destination:
     server: https://kubernetes.default.svc
     namespace: splunk-operator
