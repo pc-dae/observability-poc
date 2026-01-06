@@ -560,6 +560,7 @@ apply_and_wait "${global_config_path}/local-cluster/addons/grafana/datasources"
 
 apply_and_wait "${global_config_path}/local-cluster/grafana-dashboards.yaml"
 
+kubectl apply -f https://github.com/splunk/splunk-operator/releases/download/3.0.0/splunk-operator-crds.yaml --server-side
 apply_and_wait "${global_config_path}/local-cluster/addons.yaml"
 
 setup_grafana_password
