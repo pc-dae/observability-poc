@@ -552,7 +552,7 @@ kubectl apply -f ${global_config_path}/local-cluster/secrets/vault-store.yaml
 
 setup_splunk_password
 secrets.sh $debug_str --tls-skip --secrets secrets/github-secrets.sh
-
+kubectl apply -f 
 sleep 10
 kubectl rollout restart deployment -n external-secrets external-secrets
 
@@ -560,7 +560,6 @@ apply_and_wait "${global_config_path}/local-cluster/addons/grafana/datasources"
 
 apply_and_wait "${global_config_path}/local-cluster/grafana-dashboards.yaml"
 
-# kubectl apply -f https://github.com/splunk/splunk-operator/releases/download/3.0.0/splunk-operator-crds.yaml --server-side
 apply_and_wait "${global_config_path}/local-cluster/addons.yaml"
 
 setup_grafana_password
@@ -569,5 +568,4 @@ setup_grafana_password
 apply_and_wait "${global_config_path}/local-cluster/addons/appsets"
 
 setup_vm_otel "vm-one"
-setup_vm_splunk "vm-one"
 

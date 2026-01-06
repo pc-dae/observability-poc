@@ -1,8 +1,0 @@
-apiVersion: enterprise.splunk.com/v4
-kind: Standalone
-metadata:
-  name: s1
-  namespace: splunk
-spec:
-  splunkConf:
-    splunkSecret: splunk-test-secret
