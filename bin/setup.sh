@@ -552,7 +552,7 @@ kubectl apply -f ${global_config_path}/local-cluster/secrets/vault-store.yaml
 
 setup_splunk_password
 secrets.sh $debug_str --tls-skip --secrets secrets/github-secrets.sh
-kubectl apply -f 
+
 sleep 10
 kubectl rollout restart deployment -n external-secrets external-secrets
 
