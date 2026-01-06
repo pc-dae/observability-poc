@@ -45,7 +45,7 @@ spec:
                   out_of_order_time_window: 5m
                 memberlist:
                   join_members:
-                    - '{{ "{{" }}"{{" }} printf "%s-gossip-ring.%s.svc.cluster.local" (include "mimir.fullname" .) .Release.Namespace {{ "{{" }}"}}" }}{{ "}}" }}'
+                    - '{{ print "{{ \"{{\" }} printf \"%s-gossip-ring.%s.svc.cluster.local\" (include \"mimir.fullname\" .) .Release.Namespace {{ \"}}\" }}" }}'
             alertmanager:
               enabled: true
               config:
