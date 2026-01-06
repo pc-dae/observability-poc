@@ -46,6 +46,12 @@ spec:
             image:
               repository: "otel/opentelemetry-collector-contrib"
               tag: "0.139.0"
+            extraEnvs:
+            - name: SPLUNK_HEC_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: splunk-hec-secret
+                  key: token
             extraVolumes:
             - name: local-ca
               configMap:
@@ -142,6 +148,14 @@ spec:
                   spike_limit_percentage: 15
 
               exporters:
+                splunk_hec:
+                  token: "${env:SPLUNK_HEC_TOKEN}"
+                  endpoint: "https://prd-p-fxrik.splunkcloud.com:8088/services/collector/event"
+                  tls:
+                    insecure_skip_verify: true 
+                  source: "otel"
+                  sourcetype: "otel:logs"
+                  index: "main"
                 otlphttp/loki:
                   endpoint: "https://loki.{{ "{{" }}.dnsSuffix}}/otlp"
                   sending_queue:
@@ -185,7 +199,7 @@ spec:
                   logs:
                     receivers: [otlp]
                     processors: [memory_limiter, batch]
-                    exporters: [otlphttp/loki]
+                    exporters: [otlphttp/loki, splunk_hec]
       destination:
         server: 'https://kubernetes.default.svc'
         namespace: '{{ "{{" }}.namespace}}'
