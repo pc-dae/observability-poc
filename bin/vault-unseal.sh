@@ -56,3 +56,4 @@ kubectl -n vault exec --stdin=true --tty=true vault-0 -- vault operator unseal $
 kubectl -n vault exec --stdin=true --tty=true vault-0 -- vault operator unseal $key3
 
 sleep 5
+echo "Vault unsealed."
