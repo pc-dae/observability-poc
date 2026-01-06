@@ -59,7 +59,6 @@ EOF
 vault secrets enable $tls_skip  -path=secrets kv-v2
 
 vault auth enable $tls_skip kubernetes
-set +e
 echo "Creating Vault policy for application access..."
 vault policy write $tls_skip application-reader - <<EOF
 path "kv/data/application-properties/dev" {

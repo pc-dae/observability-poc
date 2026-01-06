@@ -64,5 +64,7 @@ while ( true); do
 done
 
 vault-unseal.sh $debug_str --tls-skip
-
+set +e
 vault-secrets-config.sh $debug_str --tls-skip
+set -e
+echo "Vault initialization complete."
