@@ -145,7 +145,7 @@ export LOCAL_DNS="$local_dns"
 
 function setup_splunk_token() {
   echo "Setting up Splunk token..."
-  if [ -f "secrets/.splunk-token" ]; then
+  if [ ! -f "secrets/.splunk-token" ]; then
     echo "secrets/.splunk-token is not found, please create it with the Splunk token in it."
     exit 1
   fi
