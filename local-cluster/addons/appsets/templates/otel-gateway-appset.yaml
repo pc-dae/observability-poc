@@ -119,9 +119,7 @@ spec:
                         scrape_interval: 15s
                         static_configs:
                           - targets:
-                              - 'victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8480'
-                              - 'victoria-metrics-victoria-metrics-cluster-vmselect.victoria-metrics.svc:8481'
-                              - 'victoria-metrics-victoria-metrics-cluster-vmstorage.victoria-metrics.svc:8482'
+                              - 'victoria-metrics-victoria-metrics-cluster-vminsert.victoria-metrics.svc:8428'
                       - job_name: 'kubernetes-apiserver'
                         scrape_interval: 15s
                         scheme: https
