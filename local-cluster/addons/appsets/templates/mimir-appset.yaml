@@ -37,13 +37,13 @@ spec:
               replicas: 1
               resources:
                 requests:
-                  cpu: 500m
-                  memory: 1Gi
+                  cpu: 1000m
+                  memory: 2Gi
             store_gateway:
               resources:
                 requests:
-                  cpu: 100m
-                  memory: 256Mi
+                  cpu: 200m
+                  memory: 512Mi
             mimir:
               structuredConfig:
                 ingester:
