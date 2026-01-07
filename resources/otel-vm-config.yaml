@@ -76,7 +76,7 @@ exporters:
     sourcetype: "otel:logs"
     index: "main"
   otlp/newrelic:
-    endpoint: "otlp.nr-data.net:4317"
+    endpoint: "otlp.eu01.nr-data.net:4317"
     headers:
       api-key: "${env:NR_LICENSE_KEY}"
   otlphttp/tempo:
