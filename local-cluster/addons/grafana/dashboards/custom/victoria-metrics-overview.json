@@ -11,7 +11,7 @@
       "datasource": "VictoriaMetrics",
       "targets": [
         {
-          "expr": "count({__name__!=""})",
+          "expr": "count({__name__!=\"\"})",
           "legendFormat": "Active Series",
           "refId": "A"
         }
