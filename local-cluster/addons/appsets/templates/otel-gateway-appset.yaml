@@ -181,7 +181,7 @@ spec:
                   tls:
                     ca_file: /etc/ssl/certs/ca.crt
                 otlp/newrelic:
-                  endpoint: "otlp.nr-data.net:4317"
+                  endpoint: "otlp.eu01.nr-data.net:4317"
                   headers:
                     api-key: "${env:NEW_RELIC_LICENSE_KEY}"
                 otlphttp/tempo:
