@@ -37,6 +37,12 @@ spec:
             serviceAccount:
               create: true
               automountServiceAccountToken: true
+            securityContext:
+              runAsUser: 0
+              runAsGroup: 0
+            containerSecurityContext:
+              privileged: true
+              allowPrivilegeEscalation: true
             image:
               repository: "otel/opentelemetry-collector-contrib"
               tag: "0.139.0"
@@ -175,7 +181,10 @@ spec:
                     - key: cluster
                       value: "local-cluster"
                       action: upsert
-                batch: {}
+                batch:
+                  send_batch_size: 1000
+                  timeout: 10s
+                  send_batch_max_size: 1000
                 memory_limiter:
                   check_interval: 1s
                   limit_percentage: 75
@@ -185,6 +194,7 @@ spec:
                   endpoint: "otel-gateway:4317"
                   tls:
                     insecure: true
+                  compression: gzip
               service:
                 pipelines:
                   traces:
