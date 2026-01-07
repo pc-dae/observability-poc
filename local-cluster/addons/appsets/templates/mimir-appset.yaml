@@ -35,14 +35,25 @@ spec:
           values: |
             mimir:
               structuredConfig:
-                ingester:
-                  ring:
-                    replication_factor: 1
-                store_gateway:
-                  sharding_ring:
+            ingester:
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 1Gi
+              replicas: 1
+              ring:
+                replication_factor: 1
+            store_gateway:
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+              sharding_ring:
                     replication_factor: 1
                 limits:
-                  out_of_order_time_window: 5m
+                  out_of_order_time_window: 30m
+                  ingestion_rate: 100000
+                  ingestion_burst_size: 200000
                 memberlist:
                   join_members:
                     - '{{ print "{{ \"{{\" }} printf \"%s-gossip-ring.%s.svc.cluster.local\" (include \"mimir.fullname\" .) .Release.Namespace {{ \"}}\" }}" }}'
