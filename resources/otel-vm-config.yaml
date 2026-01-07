@@ -78,7 +78,7 @@ exporters:
   otlp/newrelic:
     endpoint: "otlp.nr-data.net:4317"
     headers:
-      api-key: "$NR_LICENSE_KEY"
+      api-key: "${env:NR_LICENSE_KEY}"
   otlphttp/tempo:
     endpoint: "https://tempo.$LOCAL_DNS"
     sending_queue:

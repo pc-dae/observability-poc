@@ -335,10 +335,23 @@ function setup_vm_otel() {
   else
       echo "Warning: resources/CA.cer not found. TLS validation might fail."
   fi
+  # Export vars for envsubst, limiting scope to avoid replacing OTEL's ${env:...} syntax
   export VM_NAME
-  export SPLUNK_HEC_TOKEN=$SPLUNK_TOKEN
-  export NR_LICENSE_KEY=$NEW_RELIC_LICENSE_KEY
-  cat ${global_config_path}/resources/otel-vm-config.yaml | envsubst > /tmp/$VM_NAME-otel.yaml
+  export LOCAL_DNS
+  
+  # Configure environment variables file on VM for secrets
+  # We write to /etc/default/otelcol-contrib which systemd loads
+  echo "Configuring secrets in /etc/default/otelcol-contrib on VM..."
+  multipass exec $VM_NAME -- sudo sh -c "cat > /etc/default/otelcol-contrib <<EOF
+OTELCOL_OPTIONS=\"--config=/etc/otelcol-contrib/config.yaml\"
+NR_LICENSE_KEY=$NEW_RELIC_LICENSE_KEY
+SPLUNK_HEC_TOKEN=$SPLUNK_TOKEN
+EOF"
+  multipass exec $VM_NAME -- sudo chmod 600 /etc/default/otelcol-contrib
+  multipass exec $VM_NAME -- sudo chown root:root /etc/default/otelcol-contrib
+
+  # Substitute only specific variables to preserve ${env:VAR} syntax for OTEL
+  cat ${global_config_path}/resources/otel-vm-config.yaml | envsubst '$VM_NAME $LOCAL_DNS' > /tmp/$VM_NAME-otel.yaml
   multipass transfer /tmp/$VM_NAME-otel.yaml $VM_NAME:config.yaml
   multipass exec $VM_NAME -- sudo mv config.yaml /etc/otelcol-contrib/config.yaml
   multipass exec $VM_NAME -- sudo chmod 644 /etc/otelcol-contrib/config.yaml
