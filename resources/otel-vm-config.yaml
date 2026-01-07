@@ -68,7 +68,7 @@ exporters:
     tls:
       ca_file: /etc/otelcol-contrib/ca.crt
   splunk_hec:
-    token: "$SPLUNK_HEC_TOKEN"
+    token: "${env:SPLUNK_HEC_TOKEN}"
     endpoint: "https://prd-p-fxrik.splunkcloud.com:8088/services/collector/event"
     tls:
       insecure_skip_verify: true
