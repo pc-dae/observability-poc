@@ -143,6 +143,15 @@ b64w=""
 export LOCAL_DNS="$local_dns"
 
 
+function setup_nr_key() {
+  echo "Setting up New Relic license key..."
+  if [ ! -f "secrets/.newrelic-license-key" ]; then
+    echo "secrets/.newrelic-license-key is not found, please create it with the New Relic license key in it."
+    exit 1
+  fi
+  export NEW_RELIC_LICENSE_KEY=$(cat secrets/.newrelic-license-key)
+}
+
 function setup_splunk_token() {
   echo "Setting up Splunk token..."
   if [ ! -f "secrets/.splunk-token" ]; then
@@ -328,6 +337,7 @@ function setup_vm_otel() {
   fi
   export VM_NAME
   export SPLUNK_HEC_TOKEN=$SPLUNK_TOKEN
+  export NR_LICENSE_KEY=$NEW_RELIC_LICENSE_KEY
   cat ${global_config_path}/resources/otel-vm-config.yaml | envsubst > /tmp/$VM_NAME-otel.yaml
   multipass transfer /tmp/$VM_NAME-otel.yaml $VM_NAME:config.yaml
   multipass exec $VM_NAME -- sudo mv config.yaml /etc/otelcol-contrib/config.yaml
@@ -548,6 +558,7 @@ EOF
 kubectl apply -f ${global_config_path}/local-cluster/secrets/vault-store.yaml
 
 setup_splunk_token
+setup_nr_key
 secrets.sh $debug_str --tls-skip --secrets secrets/github-secrets.sh
 
 sleep 10

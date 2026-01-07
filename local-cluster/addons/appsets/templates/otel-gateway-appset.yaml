@@ -52,6 +52,11 @@ spec:
                 secretKeyRef:
                   name: splunk-hec-secret
                   key: token
+            - name: NEW_RELIC_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newrelic-account-secret
+                  key: licenseKey
             extraVolumes:
             - name: local-ca
               configMap:
@@ -173,6 +178,10 @@ spec:
                   endpoint: "https://mimir.{{ "{{" }}.dnsSuffix}}/api/v1/push"
                   tls:
                     ca_file: /etc/ssl/certs/ca.crt
+                otlp/newrelic:
+                  endpoint: "otlp.nr-data.net:4317"
+                  headers:
+                    api-key: "${env:NEW_RELIC_LICENSE_KEY}"
                 otlphttp/tempo:
                   endpoint: "https://tempo.{{ "{{" }}.dnsSuffix}}"
                   sending_queue:
@@ -195,7 +204,7 @@ spec:
                   metrics:
                     receivers: [otlp, k8s_cluster, prometheus]
                     processors: [memory_limiter, attributes, batch]
-                    exporters: [prometheusremotewrite/victoriametrics, prometheusremotewrite/mimir]
+                    exporters: [prometheusremotewrite/victoriametrics, prometheusremotewrite/mimir, otlp/newrelic]
                   logs:
                     receivers: [otlp]
                     processors: [memory_limiter, batch]

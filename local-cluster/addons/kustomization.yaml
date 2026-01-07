@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - kafka/application.yaml
   - splunk/secret.yaml
+  - newrelic/secret.yaml
 
 
 

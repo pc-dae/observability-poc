@@ -75,6 +75,10 @@ exporters:
     source: "otel-vm"
     sourcetype: "otel:logs"
     index: "main"
+  otlp/newrelic:
+    endpoint: "otlp.nr-data.net:4317"
+    headers:
+      api-key: "$NR_LICENSE_KEY"
   otlphttp/tempo:
     endpoint: "https://tempo.$LOCAL_DNS"
     sending_queue:
@@ -97,7 +101,7 @@ service:
     metrics:
       receivers: [hostmetrics]
       processors: [memory_limiter, resourcedetection, resource, batch]
-      exporters: [prometheusremotewrite/victoriametrics, prometheusremotewrite/mimir]
+      exporters: [prometheusremotewrite/victoriametrics, prometheusremotewrite/mimir, otlp/newrelic]
     logs:
       receivers: [filelog]
       processors: [memory_limiter, resourcedetection, resource, batch]
