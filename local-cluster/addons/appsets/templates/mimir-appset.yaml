@@ -33,6 +33,11 @@ spec:
         targetRevision: '{{ "{{" }}.version}}'
         helm:
           values: |
+            distributor:
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 1Gi
             ingester:
               replicas: 1
               resources:
