@@ -7,6 +7,7 @@ configMapGenerator:
       - kubernetes-cluster.json
       - otel-host-metrics.json
       - victoria-metrics-overview.json
+      - loki-ingestion.json
 
 commonLabels:
   grafana_dashboard: "1"
