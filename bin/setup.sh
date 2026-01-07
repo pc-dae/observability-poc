@@ -350,6 +350,14 @@ EOF"
   multipass exec $VM_NAME -- sudo chmod 600 /etc/default/otelcol-contrib
   multipass exec $VM_NAME -- sudo chown root:root /etc/default/otelcol-contrib
 
+  # Ensure systemd loads the environment file
+  multipass exec $VM_NAME -- sudo mkdir -p /etc/systemd/system/otelcol-contrib.service.d
+  multipass exec $VM_NAME -- sudo sh -c "cat > /etc/systemd/system/otelcol-contrib.service.d/env.conf <<EOF
+[Service]
+EnvironmentFile=/etc/default/otelcol-contrib
+EOF"
+  multipass exec $VM_NAME -- sudo systemctl daemon-reload
+
   # Substitute only specific variables to preserve ${env:VAR} syntax for OTEL
   cat ${global_config_path}/resources/otel-vm-config.yaml | envsubst '$VM_NAME $LOCAL_DNS' > /tmp/$VM_NAME-otel.yaml
   multipass transfer /tmp/$VM_NAME-otel.yaml $VM_NAME:config.yaml
