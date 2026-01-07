@@ -33,6 +33,17 @@ spec:
         targetRevision: '{{ "{{" }}.version}}'
         helm:
           values: |
+            ingester:
+              replicas: 1
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 1Gi
+            store_gateway:
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
             mimir:
               structuredConfig:
                 ingester:
@@ -48,17 +59,6 @@ spec:
                 memberlist:
                   join_members:
                     - '{{ print "{{ \"{{\" }} printf \"%s-gossip-ring.%s.svc.cluster.local\" (include \"mimir.fullname\" .) .Release.Namespace {{ \"}}\" }}" }}'
-            ingester:
-              replicas: 1
-              resources:
-                requests:
-                  cpu: 500m
-                  memory: 1Gi
-            store_gateway:
-              resources:
-                requests:
-                  cpu: 100m
-                  memory: 256Mi
             alertmanager:
               enabled: true
               config:
