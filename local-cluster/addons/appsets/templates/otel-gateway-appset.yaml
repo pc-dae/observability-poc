@@ -139,10 +139,10 @@ spec:
                         scrape_interval: 15s
                         static_configs:
                           - targets: ['kube-dns.kube-system.svc:9153']
-                      - job_name: 'kube-state-metrics'
+                      - job_name: 'loki'
                         scrape_interval: 15s
                         static_configs:
-                          - targets: ['kube-state-metrics.monitoring.svc:8080']
+                          - targets: ['loki.monitoring.svc:3100']
               
               processors:
                 attributes:
