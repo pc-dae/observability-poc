@@ -35,6 +35,8 @@ spec:
           values: |
             fullnameOverride: otel-gateway
             mode: statefulset
+            podSecurityContext:
+              fsGroup: 10001
             clusterRole:
               create: true
               rules:
@@ -43,6 +45,8 @@ spec:
                 verbs: ["get", "list", "watch"]
               - nonResourceURLs: ["/metrics"]
                 verbs: ["get"]
+            annotations:
+              restartedAt: "2026-01-07T12:00:00Z"
             image:
               repository: "otel/opentelemetry-collector-contrib"
               tag: "0.139.0"
